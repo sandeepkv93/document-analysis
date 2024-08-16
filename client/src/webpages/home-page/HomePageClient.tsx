@@ -12,7 +12,7 @@ export default function HomePageClient(_props: IHomePageClientProps) {
         <PageHeaderClient hasDivider title='Home' />
       </section>
       <section>
-        <PageSubHeaderClient title='Hello!' />
+        <PageSubHeaderClient title='Hello, Sandeep!' />
         <p>Welcome to the Doc Analysis app.</p>
         <p>Let&rsquo;s build something new! &#128640;</p>
       </section>

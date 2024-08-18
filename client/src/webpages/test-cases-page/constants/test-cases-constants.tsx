@@ -30,7 +30,7 @@ export const TEST_CASES: ITestCaseConfig[] = [
     name: 'Health check',
     description: 'Verify base health-check connection is established',
     requestUrl: HEALTH_CHECK_URL,
-    requestBody: null,
+    requestBody: {},
     validateResponse: (responseData: unknown) => {
       if (responseData == null) {
         return [false, ['Response data is null']];

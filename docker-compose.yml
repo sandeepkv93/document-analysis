@@ -4,10 +4,19 @@ services:
       context: ./client/
       dockerfile: Dockerfile
     ports:
-      - "3000:3000" # expose local port
+      - '3000:3000' # expose local port
     volumes:
       - ./client/:/usr/src/app # mount local working directory for live reload
       - /usr/src/app/node_modules # mount node_modules for caching
+    env_file:
+      - client.env
+
+  server:
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+    ports:
+      - '4000:4000' # expose local port
     environment:
-      - NEXT_PUBLIC_HEALTH_CHECK_URL=TODO
-      - NEXT_PUBLIC_DOC_ANALYSIS_URL=TODO
+      - NODE_ENV=development
+      - PORT=4000

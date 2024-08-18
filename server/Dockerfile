@@ -16,7 +16,16 @@ COPY . .
 # Build the TypeScript code
 RUN npm run build
 
-# Use a minimal runtime image to reduce the final image size
+# Stage for running tests
+FROM build AS test
+
+# Install Jest and ts-jest
+RUN npm install --save-dev jest ts-jest @types/jest
+
+# Run tests
+RUN npm test
+
+# Final stage: use a minimal runtime image to reduce the final image size
 FROM node:18.17.0-alpine
 
 # Set the working directory in the container

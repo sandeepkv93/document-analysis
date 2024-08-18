@@ -7,14 +7,16 @@ const app: Express = express()
 
 // Middlewares
 
-// Enable CORS
+// 1. Enable CORS
 app.use(cors())
-// Parse JSON bodies
+// 2. Parse JSON bodies
 app.use(express.json())
-// Log requests using morgan
+// 3. Log requests using morgan
 app.use(morgan('dev'))
 
-// healthcheck routes
+// Routes
+
+// 1. healthcheck routes
 app.use(healthRouter)
 
 export default app

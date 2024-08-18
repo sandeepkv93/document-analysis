@@ -1,15 +1,32 @@
 {
   "name": "server",
   "version": "1.0.0",
+  "description": "Simple Express Server with health check and APIs for Document Analysis",
+  "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc",
     "start": "node dist/server.js",
-    "dev": "ts-node src/server.ts"
+    "dev": "ts-node src/server.ts",
+    "lint": "eslint 'src/**/*.ts'",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "nodejs",
+    "express",
+    "typescript",
+    "api",
+    "document-analysis",
+    "health-check",
+    "gavel",
+    "teamups"
+  ],
+  "author": "Sandeep Kumta Vishnu <sandeepkv93@example.com>",
   "license": "ISC",
-  "description": "",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
@@ -21,6 +38,12 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.4.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "eslint": "^8.47.0",
+    "prettier": "^3.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teamups-dev/teamups-tech-x-668aa4e62f9997d4596afad5-6697ccb61e41d7d0b5ee2aaf-66bf3093a03f0645530e369f.git"
   }
 }

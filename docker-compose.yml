@@ -10,13 +10,29 @@ services:
       - /usr/src/app/node_modules # mount node_modules for caching
     env_file:
       - client.env
+    networks:
+      - app-network
+    depends_on:
+      - server
 
   server:
     build:
       context: ./server/
       dockerfile: Dockerfile
+      args:
+        PORT: 4000
     ports:
       - '4000:4000' # expose local port
     environment:
-      - NODE_ENV=development
       - PORT=4000
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD', 'curl', '-X', 'POST', 'http://localhost:4000/ping']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge

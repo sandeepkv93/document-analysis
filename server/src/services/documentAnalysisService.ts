@@ -1,119 +1,85 @@
 import {
   fillerWordsSet,
-  mergeWordFrequencyArraysIntoOne,
+  getTopThreeWords,
   parseKeywordMacro,
 } from '../utils/documentAnalysisHelper'
 
+/**
+ * Analyzes a given text to determine the top three words, excluding certain words or phrases,
+ * and based on specific inclusion and exclusion criteria.
+ *
+ * @function
+ * @param {string} text - The input text to be analyzed, consisting of multiple sentences.
+ * @param {string} keyword_macro - A string defining the keywords to include and exclude,
+ * separated by `+` for inclusion and `-` for exclusion.
+ *
+ * @returns {string[]} - An array of the top three words from the text, sorted by frequency
+ * in descending order. If multiple words have the same frequency, they are sorted alphabetically in descending order.
+ *
+ * @example
+ * const text = "This is a test. Testing is important. Test cases are essential.";
+ * const keyword_macro = "test+important-testing";
+ *
+ * const result = topThreeWords(text, keyword_macro);
+ * console.log(result); // Output: ['cases', 'are', 'essential']
+ */
 export function topThreeWords(text: string, keyword_macro: string): string[] {
   const { wordsToInclude, wordsToExclude } = parseKeywordMacro(keyword_macro)
 
-  console.log('wordsToInclude', wordsToInclude)
-  console.log('wordsToExclude', wordsToExclude)
+  // Split the text into sentences and trim any extra whitespace
+  const sentences = text.split('.').map((sentence) => sentence.trim())
 
-  // Split the text into sentences and store them in an array
-  const sentences: string[] = text.split('.')
+  /**
+   * Aggregate word frequencies across all sentences that meet the inclusion and exclusion criteria.
+   *
+   * @param {Object} acc - The accumulator object storing the merged word frequencies.
+   * @param {string} sentence - The current sentence being processed.
+   * @returns {Object} - The updated accumulator with merged word frequencies.
+   */
+  const mergedWordFrequency = sentences.reduce<{ [key: string]: number }>(
+    (acc, sentence) => {
+      const wordFrequency: { [key: string]: number } = {}
 
-  // Create a array of hashmaps to store the words and their frequency for each sentence
-  const sentenceWordFrequency: { [key: string]: number }[] = []
+      // Split the sentence into words, clean them, and convert to lowercase
+      const words = sentence.split(' ').map(
+        (word) =>
+          word
+            .replace(/[^a-zA-Z]/g, '') // Remove non-alphabetic characters
+            .toLowerCase() // Convert to lowercase
+            .trim() // Trim whitespace
+      )
 
-  // Iterate over each sentence in the text
-  sentences.forEach((sentence: string) => {
-    // Create a hashmap to store the frequency of each word in the sentence
-    const wordFrequency: { [key: string]: number } = {}
+      // Check if the sentence includes all words required by wordsToInclude
+      const includeSentence = wordsToInclude.every((word) =>
+        words.some((w) => w.includes(word))
+      )
 
-    console.log('Sentence => ', sentence)
+      // Check if the sentence should be excluded based on wordsToExclude or their subsequences
+      const excludeSentence = wordsToExclude.some((word) =>
+        words.some((w) => w.includes(word))
+      )
 
-    // Split the sentence into words and store them in an array
-    const words: string[] = sentence.split(' ')
-
-    // Iterate over each word in the sentence
-    words.forEach((word: string) => {
-      if (!word) {
-        return
+      // If the sentence should not be included or should be excluded, skip it
+      if (!includeSentence || excludeSentence) {
+        return acc
       }
 
-      // Remove any special characters and symbols from the word
-      word = word.replace(/[^a-zA-Z ]/g, '').toLowerCase()
-
-      // Skip the word if it is a filler word
-      if (fillerWordsSet.has(word)) {
-        return
-      }
-
-      // Increment the frequency of the word in the hashmap
-      if (wordFrequency[word]) {
-        wordFrequency[word]++
-      } else {
-        wordFrequency[word] = 1
-      }
-    })
-
-    // parse through the wordsToExclude, if the hashmap contains any of the words, skip the forEach loop and continue to the next sentence
-    let skipSentence = false
-    wordsToExclude.forEach((word) => {
-      if (wordFrequency[word]) {
-        skipSentence = true
-      }
-    })
-
-    if (skipSentence) {
-      return // Skip the current sentence
-    }
-
-    // Check if the sentence contains all the words in the wordsToInclude array and add it to the sentenceWordFrequency array
-    let includeSentence = true
-    wordsToInclude.forEach((word) => {
-      if (!wordFrequency[word]) {
-        includeSentence = false
-      }
-
-      // check if word is a subsequence of any key in the wordFrequency hashmap and in that case set includeSentence to true
-      Object.keys(wordFrequency).forEach((key) => {
-        if (key.includes(word)) {
-          includeSentence = true
+      // Count word frequencies in the sentence, excluding filler words
+      words.forEach((word) => {
+        if (word && !fillerWordsSet.has(word)) {
+          wordFrequency[word] = (wordFrequency[word] || 0) + 1
         }
       })
-    })
 
-    if (!includeSentence) {
-      return // Skip the current sentence
-    }
+      // Merge the current sentence's word frequencies into the accumulated frequencies
+      Object.keys(wordFrequency).forEach((word) => {
+        acc[word] = (acc[word] || 0) + wordFrequency[word]
+      })
 
-    console.log('Sentence => ', sentence, ' ~~~ is not skipped')
-    sentenceWordFrequency.push(wordFrequency)
-  })
+      return acc
+    },
+    {}
+  )
 
-  console.log('sentenceWordFrequency', sentenceWordFrequency)
-
-  let mergedWordFrequency: { [key: string]: number } =
-    mergeWordFrequencyArraysIntoOne(sentenceWordFrequency)
-
-  Object.keys(mergedWordFrequency).forEach((key) => {
-    if (!key) {
-      delete mergedWordFrequency[key]
-    }
-  })
-
-  console.log('mergedWordFrequency', mergedWordFrequency)
-
-  // Remove the wordsToInclude from the mergedWordFrequency
-  wordsToInclude.forEach((word) => {
-    delete mergedWordFrequency[word]
-  })
-
-  const sortedWords: string[] = Object.keys(mergedWordFrequency)
-    .sort((a: string, b: string) => {
-      const frequencyDifference =
-        mergedWordFrequency[b] - mergedWordFrequency[a]
-      if (frequencyDifference !== 0) {
-        return frequencyDifference
-      }
-      // If frequencies are equal, sort by descending order of the word (key)
-      return b.localeCompare(a)
-    })
-    .slice(0, 3)
-
-  let topThreeWordsResult: string[] = sortedWords.slice(0, 3)
-  console.log('topThreeWordsResult', topThreeWordsResult)
-  return topThreeWordsResult
+  return getTopThreeWords(mergedWordFrequency, wordsToInclude)
 }

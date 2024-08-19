@@ -63,3 +63,28 @@ export function mergeWordFrequencyArraysIntoOne(
 
   return mergedWordFrequency
 }
+
+/**
+ * Retrieves the top three words from the merged word frequency object, excluding the words to include.
+ * When two words have the same frequency, they will be sorted alphabetically in descending order.
+ *
+ * @param mergedWordFrequency - The merged word frequency object.
+ * @param wordsToInclude - The words to include in the result.
+ * @returns An array of the top three words.
+ */
+export function getTopThreeWords(
+  mergedWordFrequency: { [key: string]: number },
+  wordsToInclude: string[]
+): string[] {
+  return Object.keys(mergedWordFrequency)
+    .filter((word) => !wordsToInclude.includes(word)) // Exclude words that were required in the keyword_macro
+    .sort((a, b) => {
+      const frequencyDifference =
+        mergedWordFrequency[b] - mergedWordFrequency[a]
+      if (frequencyDifference !== 0) {
+        return frequencyDifference
+      }
+      return b.localeCompare(a) // Sort alphabetically in descending order
+    })
+    .slice(0, 3) // Get top three words
+}

@@ -101,9 +101,17 @@ export function topThreeWords(text: string, keyword_macro: string): string[] {
     delete mergedWordFrequency[word]
   })
 
-  const sortedWords: string[] = Object.keys(mergedWordFrequency).sort(
-    (a: string, b: string) => mergedWordFrequency[b] - mergedWordFrequency[a]
-  )
+  const sortedWords: string[] = Object.keys(mergedWordFrequency)
+    .sort((a: string, b: string) => {
+      const frequencyDifference =
+        mergedWordFrequency[b] - mergedWordFrequency[a]
+      if (frequencyDifference !== 0) {
+        return frequencyDifference
+      }
+      // If frequencies are equal, sort by descending order of the word (key)
+      return b.localeCompare(a)
+    })
+    .slice(0, 3)
 
   let topThreeWordsResult: string[] = sortedWords.slice(0, 3)
   console.log('topThreeWordsResult', topThreeWordsResult)

@@ -1,4 +1,5 @@
 import {
+  getTopNWords,
   mergeWordFrequencyArraysIntoOne,
   parseKeywordMacro,
 } from '../utils/documentAnalysisHelper'
@@ -143,5 +144,108 @@ describe('mergeWordFrequencyArraysIntoOne', () => {
     const result: { [key: string]: number } =
       mergeWordFrequencyArraysIntoOne(wordFrequencyArrays)
     expect(result).toEqual({ word1: 1000, word2: 2000 })
+  })
+})
+
+describe('getTopNWords', () => {
+  test('should return the top N words sorted by frequency', () => {
+    const mergedWordFrequency = {
+      apple: 3,
+      banana: 2,
+      cherry: 4,
+      date: 1,
+    }
+    const result = getTopNWords(mergedWordFrequency, [], 3)
+    expect(result).toEqual(['cherry', 'apple', 'banana'])
+  })
+
+  test('should return fewer than N words if there are not enough unique words', () => {
+    const mergedWordFrequency = {
+      apple: 3,
+      banana: 2,
+    }
+    const result = getTopNWords(mergedWordFrequency, [], 5)
+    expect(result).toEqual(['apple', 'banana'])
+  })
+
+  test('should exclude words specified in wordsToInclude', () => {
+    const mergedWordFrequency = {
+      apple: 3,
+      banana: 2,
+      cherry: 4,
+      date: 1,
+    }
+    const result = getTopNWords(mergedWordFrequency, ['banana'], 3)
+    expect(result).toEqual(['cherry', 'apple', 'date'])
+  })
+
+  test('should return an empty array if all words are excluded', () => {
+    const mergedWordFrequency = {
+      apple: 3,
+      banana: 2,
+    }
+    const result = getTopNWords(mergedWordFrequency, ['apple', 'banana'], 3)
+    expect(result).toEqual([])
+  })
+
+  test('should handle empty mergedWordFrequency gracefully', () => {
+    const mergedWordFrequency = {}
+    const result = getTopNWords(mergedWordFrequency, [], 3)
+    expect(result).toEqual([])
+  })
+
+  test('should return top N words sorted alphabetically if frequencies are equal', () => {
+    const mergedWordFrequency = {
+      apple: 2,
+      banana: 2,
+      cherry: 2,
+    }
+    const result = getTopNWords(mergedWordFrequency, [], 3)
+    expect(result).toEqual(['cherry', 'banana', 'apple'])
+  })
+
+  test('should correctly exclude words and return top N from remaining', () => {
+    const mergedWordFrequency = {
+      apple: 3,
+      banana: 2,
+      cherry: 2,
+      date: 4,
+    }
+    const result = getTopNWords(mergedWordFrequency, ['date', 'banana'], 2)
+    expect(result).toEqual(['apple', 'cherry'])
+  })
+
+  test('should handle large numbers of words and frequencies correctly', () => {
+    const mergedWordFrequency = {
+      apple: 100,
+      banana: 90,
+      cherry: 80,
+      date: 70,
+      elderberry: 60,
+    }
+    const result = getTopNWords(mergedWordFrequency, [], 3)
+    expect(result).toEqual(['apple', 'banana', 'cherry'])
+  })
+
+  test('should handle a case where N is 0 and return an empty array', () => {
+    const mergedWordFrequency = {
+      apple: 3,
+      banana: 2,
+      cherry: 4,
+      date: 1,
+    }
+    const result = getTopNWords(mergedWordFrequency, [], 0)
+    expect(result).toEqual([])
+  })
+
+  test('should not break when wordsToInclude contains words not in mergedWordFrequency', () => {
+    const mergedWordFrequency = {
+      apple: 3,
+      banana: 2,
+      cherry: 4,
+      date: 1,
+    }
+    const result = getTopNWords(mergedWordFrequency, ['grape'], 3)
+    expect(result).toEqual(['cherry', 'apple', 'banana'])
   })
 })

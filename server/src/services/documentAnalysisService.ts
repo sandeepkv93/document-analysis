@@ -41,9 +41,9 @@ export function topNWords(
    * @param {string} sentence - The current sentence being processed.
    * @returns {Object} - The updated accumulator with merged word frequencies.
    */
-  const mergedWordFrequency = sentences.reduce<{ [key: string]: number }>(
+  const mergedWordFrequency = sentences.reduce<Record<string, number>>(
     (acc, sentence) => {
-      const wordFrequency: { [key: string]: number } = {}
+      const wordFrequency: Record<string, number> = {}
 
       // Split the sentence into words, clean them, and convert to lowercase
       const words = sentence.split(' ').map(

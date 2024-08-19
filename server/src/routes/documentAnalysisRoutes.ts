@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express'
-import { topThreeWords } from '../services/documentAnalysisService'
+import { topNWords } from '../services/documentAnalysisService'
 import { IDocAnalysisInput } from '../types/doc-analysis/IDocAnalysisInput'
 import { TDocAnalysisOutput } from '../types/doc-analysis/IDocAnalysisOutput'
 
@@ -36,9 +36,10 @@ documentAnalysisRouter.post(
      */
     const result: TDocAnalysisOutput[] = docAnalysisInput.keyword_macros.map(
       (keyword_macro) => {
-        const topWords: string[] = topThreeWords(
+        const topWords: string[] = topNWords(
           docAnalysisInput.text_body,
-          keyword_macro
+          keyword_macro,
+          3
         )
         return {
           keyword_macro,

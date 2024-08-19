@@ -1,6 +1,6 @@
 import {
   fillerWordsSet,
-  getTopThreeWords,
+  getTopNWords,
   parseKeywordMacro,
 } from '../utils/documentAnalysisHelper'
 
@@ -12,6 +12,7 @@ import {
  * @param {string} text - The input text to be analyzed, consisting of multiple sentences.
  * @param {string} keyword_macro - A string defining the keywords to include and exclude,
  * separated by `+` for inclusion and `-` for exclusion.
+ * @param {number} n - The number of top words to return.
  *
  * @returns {string[]} - An array of the top three words from the text, sorted by frequency
  * in descending order. If multiple words have the same frequency, they are sorted alphabetically in descending order.
@@ -20,10 +21,14 @@ import {
  * const text = "This is a test. Testing is important. Test cases are essential.";
  * const keyword_macro = "test+important-testing";
  *
- * const result = topThreeWords(text, keyword_macro);
+ * const result = topNWords(text, keyword_macro, 3);
  * console.log(result); // Output: ['cases', 'are', 'essential']
  */
-export function topThreeWords(text: string, keyword_macro: string): string[] {
+export function topNWords(
+  text: string,
+  keyword_macro: string,
+  n: number
+): string[] {
   const { wordsToInclude, wordsToExclude } = parseKeywordMacro(keyword_macro)
 
   // Split the text into sentences and trim any extra whitespace
@@ -81,5 +86,5 @@ export function topThreeWords(text: string, keyword_macro: string): string[] {
     {}
   )
 
-  return getTopThreeWords(mergedWordFrequency, wordsToInclude)
+  return getTopNWords(mergedWordFrequency, wordsToInclude, n)
 }

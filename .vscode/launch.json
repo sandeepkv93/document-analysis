@@ -8,7 +8,12 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/server/src/server.ts",
       "outFiles": ["${workspaceFolder}/server/dist/**/*.js"],
-      "runtimeArgs": ["-r", "ts-node/register", "-r", "tsconfig-paths/register"],
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
       "cwd": "${workspaceFolder}/server",
       "console": "integratedTerminal",
       "sourceMaps": true,
@@ -28,7 +33,12 @@
       "name": "(Hot-Reload) Debug Typescript Node with ts-node-dev",
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "${workspaceFolder}/server/node_modules/.bin/ts-node-dev",
-      "runtimeArgs": ["-r", "tsconfig-paths/register", "--respawn", "--transpile-only"],
+      "runtimeArgs": [
+        "-r",
+        "tsconfig-paths/register",
+        "--respawn",
+        "--transpile-only"
+      ],
       "program": "${workspaceFolder}/server/src/server.ts",
       "cwd": "${workspaceFolder}/server",
       "sourceMaps": true,
